@@ -4,5 +4,6 @@ import { authConfig } from './auth.config'
 export const { auth: middleware } = NextAuth(authConfig)
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|public).*)'],
+  // Exclude landing page (/), static files, and public assets
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|public|$).*)'],
 }

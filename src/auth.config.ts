@@ -11,11 +11,13 @@ export const authConfig: NextAuthConfig = {
       const isAdmin = (auth?.user as { role?: string })?.role === 'ADMIN'
       const pathname = nextUrl.pathname
 
-      const isAuthPage = pathname.startsWith('/login')
+      const isLanding = pathname === '/'
+      const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/registro')
       const isAdminPage = pathname.startsWith('/admin')
       const isApiAuthRoute = pathname.startsWith('/api/auth')
 
-      if (isApiAuthRoute) return true
+      // Public routes — always allow
+      if (isApiAuthRoute || isLanding) return true
 
       if (isAuthPage) {
         if (isLoggedIn) return Response.redirect(new URL('/dashboard', nextUrl))
