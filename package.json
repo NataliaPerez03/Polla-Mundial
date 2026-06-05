@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "node --max-old-space-size=8192 ./node_modules/next/dist/bin/next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
+    "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
     "db:migrate": "prisma migrate dev",
