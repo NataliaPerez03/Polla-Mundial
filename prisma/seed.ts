@@ -1,9 +1,8 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaLibSql } from '@prisma/adapter-libsql'
+import { PrismaPg } from '@prisma/adapter-pg'
 import bcrypt from 'bcryptjs'
-import path from 'path'
 
-const adapter = new PrismaLibSql({ url: `file:${path.join(process.cwd(), 'prisma', 'dev.db')}` })
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
 const prisma = new PrismaClient({ adapter })
 
 const teams = [
