@@ -2,6 +2,7 @@
   "name": "polla-mundial",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.28.0",
   "scripts": {
     "dev": "node --max-old-space-size=8192 ./node_modules/next/dist/bin/next dev",
     "build": "prisma generate && next build",
