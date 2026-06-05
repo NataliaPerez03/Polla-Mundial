@@ -44,6 +44,24 @@ export function getMatchResult(homeScore: number, awayScore: number): 'home' | '
   return 'draw'
 }
 
+// Map from FIFA 3-letter codes to ISO 2-letter codes for flagcdn.com
+const FIFA_TO_ISO: Record<string, string> = {
+  ARG: 'ar', BRA: 'br', COL: 'co', ECU: 'ec', URU: 'uy', VEN: 've',
+  GER: 'de', ESP: 'es', FRA: 'fr', ENG: 'gb-eng', POR: 'pt', NED: 'nl',
+  BEL: 'be', AUT: 'at', SUI: 'ch', TUR: 'tr', SCO: 'gb-sct', HUN: 'hu',
+  SVN: 'si', SVK: 'sk', GEO: 'ge', DEN: 'dk',
+  USA: 'us', MEX: 'mx', CAN: 'ca', HON: 'hn', CRC: 'cr', PAN: 'pa',
+  MAR: 'ma', EGY: 'eg', NGA: 'ng', RSA: 'za', SEN: 'sn', CIV: 'ci',
+  COD: 'cd', GHA: 'gh', CMR: 'cm',
+  JPN: 'jp', KOR: 'kr', KSA: 'sa', AUS: 'au', IRN: 'ir', UZB: 'uz',
+  QAT: 'qa', JOR: 'jo', NZL: 'nz',
+}
+
+export function getFlagUrl(code: string): string {
+  const iso = FIFA_TO_ISO[code.toUpperCase()] ?? code.toLowerCase()
+  return `https://flagcdn.com/24x18/${iso}.png`
+}
+
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('es-CL', {
     style: 'currency',

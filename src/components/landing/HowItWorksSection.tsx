@@ -1,11 +1,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { UserPlus, Target, TrendingUp, Trophy } from 'lucide-react'
 
 const steps = [
   {
     num: '01',
-    icon: '🏆',
+    Icon: UserPlus,
     title: 'INSCRÍBETE',
     desc: 'El administrador crea tu cuenta y pagas la cuota de inscripción para entrar al pozo.',
     color: 'rgba(230,57,70,0.15)',
@@ -13,7 +14,7 @@ const steps = [
   },
   {
     num: '02',
-    icon: '🎯',
+    Icon: Target,
     title: 'PRONOSTICA',
     desc: 'Predice el marcador exacto de cada partido antes de que empiece. Tienes hasta 1 hora antes del pitazo.',
     color: 'rgba(33,150,243,0.12)',
@@ -21,7 +22,7 @@ const steps = [
   },
   {
     num: '03',
-    icon: '📊',
+    Icon: TrendingUp,
     title: 'ACUMULA PUNTOS',
     desc: 'Gana 3 pts por resultado exacto, 1 pt por acertar ganador o empate. Los puntos se calculan automáticamente.',
     color: 'rgba(76,175,80,0.12)',
@@ -29,7 +30,7 @@ const steps = [
   },
   {
     num: '04',
-    icon: '💰',
+    Icon: Trophy,
     title: 'GANA EL POZO',
     desc: 'Al terminar el Mundial, el podio se reparte el pozo: 60% para el 1°, 25% para el 2° y 15% para el 3°.',
     color: 'rgba(255,214,10,0.1)',
@@ -85,39 +86,33 @@ export function HowItWorksSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-50px' }}
               transition={{ duration: 0.5, delay: i * 0.12 }}
-              whileHover={{ scale: 1.03, y: -4 }}
-              className="relative rounded-3xl p-7 overflow-hidden cursor-default group"
+              whileHover={{ y: -4 }}
+              className="relative rounded-xl p-7 overflow-hidden cursor-default backdrop-blur-sm group"
               style={{
-                background: step.color,
-                border: `1px solid ${step.border}`,
+                background: 'rgba(255,255,255,0.05)',
+                borderLeft: '4px solid #e63946',
+                borderTop: '1px solid rgba(255,255,255,0.06)',
+                borderRight: '1px solid rgba(255,255,255,0.06)',
+                borderBottom: '1px solid rgba(255,255,255,0.06)',
+                transition: 'border-left-color 0.2s ease, box-shadow 0.2s ease',
               }}
             >
-              {/* Glow on hover */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                style={{ boxShadow: `0 0 30px ${step.border}`, borderRadius: 'inherit' }} />
+              {/* Hover: brighten left border via shadow */}
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none rounded-xl"
+                style={{ boxShadow: 'inset 3px 0 0 #ff4a57' }} />
 
               {/* Big decorative number */}
               <div
-                className="absolute top-4 right-4 font-bebas leading-none select-none pointer-events-none"
-                style={{
-                  fontSize: '7rem',
-                  color: 'rgba(255,255,255,0.04)',
-                  lineHeight: 1,
-                }}
+                className="absolute top-3 right-4 font-bebas leading-none select-none pointer-events-none"
+                style={{ fontSize: '80px', color: 'rgba(255,255,255,0.07)', lineHeight: 1 }}
               >
                 {step.num}
               </div>
 
               {/* Icon */}
-              <div className="text-4xl mb-5">{step.icon}</div>
+              <step.Icon size={24} color="#e63946" className="mb-5" />
 
-              {/* Step number badge */}
-              <div className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold mb-3"
-                style={{ background: 'rgba(255,255,255,0.07)', color: 'var(--text-muted)' }}>
-                Paso {step.num}
-              </div>
-
-              <h3 className="font-oswald text-2xl font-bold mb-3 tracking-wide" style={{ color: 'var(--text-primary)' }}>
+              <h3 className="font-oswald text-xl font-bold mb-3 uppercase tracking-wide" style={{ color: 'var(--text-primary)' }}>
                 {step.title}
               </h3>
               <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>

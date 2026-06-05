@@ -5,35 +5,42 @@ import { motion } from 'framer-motion'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Lock, Clock, CheckCircle, Loader2, Trophy } from 'lucide-react'
+import { getFlagUrl } from '@/lib/utils'
 
 type Match = {
   id: string; matchNumber: number; homeTeam: string; awayTeam: string
-  homeFlag: string; awayFlag: string; phase: string; group: string | null
+  homeFlag: string; awayFlag: string; homeCode: string; awayCode: string
+  phase: string; group: string | null
   scheduledAt: string; status: string
   predictions: { homeScore: number; awayScore: number }[]
 }
 
+// eslint-disable-next-line @next/next/no-img-element
+const TeamFlag = ({ code, name }: { code: string; name: string }) => (
+  <img src={getFlagUrl(code)} alt={name} width={48} height={36} className="rounded object-cover mx-auto" />
+)
+
 function ScoreInput({ value, onChange, disabled }: { value: string; onChange: (v: string) => void; disabled: boolean }) {
   return (
     <div className="flex items-center gap-1">
-      <button onClick={() => !disabled && onChange(String(Math.max(0, parseInt(value || '0') - 1)))}
+      <button
+        onClick={() => !disabled && onChange(String(Math.max(0, parseInt(value || '0') - 1)))}
         disabled={disabled}
         className="w-8 h-8 rounded-lg flex items-center justify-center text-lg font-bold transition-all disabled:opacity-30"
-        style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)' }}>
-        −
-      </button>
+        style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)' }}
+      >−</button>
       <input
         type="number" min="0" max="99" value={value} disabled={disabled}
         onChange={e => onChange(e.target.value.replace(/\D/, ''))}
         className="w-12 h-10 text-center font-bebas text-2xl rounded-xl outline-none transition-all input-red disabled:opacity-40"
         style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
       />
-      <button onClick={() => !disabled && onChange(String(parseInt(value || '0') + 1))}
+      <button
+        onClick={() => !disabled && onChange(String(parseInt(value || '0') + 1))}
         disabled={disabled}
         className="w-8 h-8 rounded-lg flex items-center justify-center text-lg font-bold transition-all disabled:opacity-30"
-        style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)' }}>
-        +
-      </button>
+        style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)' }}
+      >+</button>
     </div>
   )
 }
@@ -75,27 +82,46 @@ function PredictionCard({ match, onSave }: { match: Match; onSave: () => void })
       style={{
         background: 'var(--bg-card)',
         border: locked ? '1px solid rgba(255,255,255,0.04)' : '1px solid var(--border-subtle)',
-        opacity: locked ? 0.75 : 1,
+        opacity: locked ? 0.7 : 1,
       }}
     >
+      {/* Card header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>#{match.matchNumber}</span>
-          {match.group && <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)' }}>Gr. {match.group}</span>}
+          {match.group && (
+            <span
+              className="text-xs px-2 py-0.5 rounded-sm"
+              style={{ border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.4)' }}
+            >
+              Gr. {match.group}
+            </span>
+          )}
         </div>
-        <div className="flex items-center gap-2 text-xs" style={{ color: locked ? 'var(--accent-red)' : 'var(--text-muted)' }}>
-          {locked ? <><Lock className="w-3 h-3" /> Cerrado</> : (
-            hoursLeft < 3
-              ? <><Clock className="w-3 h-3" /> {hoursLeft}h {minutesLeft}m</>
-              : format(new Date(match.scheduledAt), "d MMM · HH:mm", { locale: es })
+        <div className="flex items-center gap-1.5 text-xs">
+          {locked ? (
+            <span className="flex items-center gap-1" style={{ color: '#e63946' }}>
+              <Lock className="w-3 h-3" /> Cerrado
+            </span>
+          ) : hoursLeft < 3 ? (
+            <span className="flex items-center gap-1" style={{ color: 'var(--text-muted)' }}>
+              <Clock className="w-3 h-3" /> {hoursLeft}h {minutesLeft}m
+            </span>
+          ) : (
+            <span style={{ color: 'var(--text-muted)' }}>
+              {format(new Date(match.scheduledAt), "d MMM · HH:mm", { locale: es })}
+            </span>
           )}
         </div>
       </div>
 
+      {/* Teams & score inputs */}
       <div className="flex items-center gap-4">
-        <div className="flex-1 flex flex-col items-center gap-1">
-          <span className="text-3xl">{match.homeFlag}</span>
-          <span className="text-xs font-semibold text-center" style={{ color: 'var(--text-primary)' }}>{match.homeTeam}</span>
+        <div className="flex-1 flex flex-col items-center gap-1.5">
+          <TeamFlag code={match.homeCode} name={match.homeTeam} />
+          <span className="text-xs font-semibold text-center" style={{ color: 'var(--text-primary)' }}>
+            {match.homeTeam}
+          </span>
         </div>
 
         <div className="flex items-center gap-2">
@@ -104,18 +130,27 @@ function PredictionCard({ match, onSave }: { match: Match; onSave: () => void })
           <ScoreInput value={away} onChange={setAway} disabled={locked} />
         </div>
 
-        <div className="flex-1 flex flex-col items-center gap-1">
-          <span className="text-3xl">{match.awayFlag}</span>
-          <span className="text-xs font-semibold text-center" style={{ color: 'var(--text-primary)' }}>{match.awayTeam}</span>
+        <div className="flex-1 flex flex-col items-center gap-1.5">
+          <TeamFlag code={match.awayCode} name={match.awayTeam} />
+          <span className="text-xs font-semibold text-center" style={{ color: 'var(--text-primary)' }}>
+            {match.awayTeam}
+          </span>
         </div>
       </div>
 
       {!locked && home !== '' && away !== '' && (
         <div className="mt-4 flex justify-center">
-          <button onClick={save} disabled={saving || (!hasChanged && !!existing)}
+          <button
+            onClick={save}
+            disabled={saving || (!hasChanged && !!existing)}
             className="px-6 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:scale-105 disabled:opacity-50 flex items-center gap-2"
-            style={{ background: saved ? '#4caf50' : 'var(--accent-red)', boxShadow: saved ? 'none' : '0 0 15px rgba(230,57,70,0.3)' }}>
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <><CheckCircle className="w-4 h-4" /> Guardado</> : 'Guardar pronóstico'}
+            style={{ background: saved ? '#4caf50' : 'var(--accent-red)', boxShadow: saved ? 'none' : '0 0 15px rgba(230,57,70,0.3)' }}
+          >
+            {saving
+              ? <Loader2 className="w-4 h-4 animate-spin" />
+              : saved
+                ? <><CheckCircle className="w-4 h-4" /> Guardado</>
+                : 'Guardar pronóstico'}
           </button>
         </div>
       )}
@@ -126,7 +161,7 @@ function PredictionCard({ match, onSave }: { match: Match; onSave: () => void })
 export default function MisPronosticosPage() {
   const [matches, setMatches] = useState<Match[]>([])
   const [loading, setLoading] = useState(true)
-  const [special, setSpecial] = useState<{ champion: string; semi1: string; semi2: string; semi3: string; semi4: string } | null>(null)
+  const [special, setSpecial] = useState<{ champion: string } | null>(null)
   const [championInput, setChampionInput] = useState('')
   const [savingSpecial, setSavingSpecial] = useState(false)
 
@@ -161,13 +196,25 @@ export default function MisPronosticosPage() {
   }, {})
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
-      {/* Special prediction */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-        className="rounded-2xl p-6"
-        style={{ background: 'linear-gradient(135deg,rgba(255,214,10,0.08),rgba(255,214,10,0.03))', border: '1px solid rgba(255,214,10,0.2)' }}>
-        <div className="flex items-center gap-3 mb-4">
-          <Trophy className="w-6 h-6" style={{ color: 'var(--accent-gold)' }} />
+    <div className="max-w-4xl mx-auto space-y-8">
+
+      {/* Special prediction card — champion */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative rounded-2xl p-8 overflow-hidden backdrop-blur-sm w-full"
+        style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,214,10,0.3)' }}
+      >
+        {/* Decorative "15" background */}
+        <div
+          className="absolute bottom-2 right-4 font-bebas leading-none select-none pointer-events-none"
+          style={{ fontSize: '7rem', color: 'rgba(255,255,255,0.05)', lineHeight: 1 }}
+        >
+          15
+        </div>
+
+        <div className="flex items-center gap-3 mb-4 relative">
+          <Trophy className="w-6 h-6 flex-shrink-0" style={{ color: '#ffd60a' }} />
           <div>
             <h3 className="font-oswald text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
               Pronóstico Especial — Campeón
@@ -175,24 +222,32 @@ export default function MisPronosticosPage() {
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Vale 15 puntos si aciertas</p>
           </div>
         </div>
+
         {special?.champion ? (
-          <div className="flex items-center gap-3 p-3 rounded-xl"
-            style={{ background: 'rgba(255,214,10,0.1)', border: '1px solid rgba(255,214,10,0.2)' }}>
-            <CheckCircle className="w-5 h-5" style={{ color: 'var(--accent-gold)' }} />
+          <div className="flex items-center gap-3 p-3 rounded-xl relative"
+            style={{ background: 'rgba(255,214,10,0.06)', border: '1px solid rgba(255,214,10,0.15)' }}>
+            <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color: '#ffd60a' }} />
             <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>
               Tu campeón: <strong>{special.champion}</strong>
             </span>
           </div>
         ) : (
-          <div className="flex gap-3">
-            <input value={championInput} onChange={e => setChampionInput(e.target.value)}
+          <div className="flex gap-3 relative">
+            <input
+              value={championInput}
+              onChange={e => setChampionInput(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') saveSpecial() }}
               placeholder="Ej: Argentina, Brasil, Francia..."
               className="flex-1 px-4 py-2.5 rounded-xl text-sm outline-none transition-all input-red"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,214,10,0.2)', color: 'var(--text-primary)' }}
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-primary)' }}
             />
-            <button onClick={saveSpecial} disabled={savingSpecial || !championInput.trim()}
-              className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:scale-105 disabled:opacity-50"
-              style={{ background: 'var(--accent-gold)', color: '#000' }}>
+            <button
+              type="button"
+              onClick={saveSpecial}
+              disabled={savingSpecial || !championInput.trim()}
+              className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-80 disabled:opacity-50 flex items-center gap-2"
+              style={{ background: '#e63946' }}
+            >
               {savingSpecial ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Guardar'}
             </button>
           </div>

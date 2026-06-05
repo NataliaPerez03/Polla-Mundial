@@ -160,10 +160,13 @@ export function HeroSection() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-[0.2em] uppercase mb-8"
-          style={{ background: 'rgba(230,57,70,0.1)', border: '1px solid rgba(230,57,70,0.35)', color: 'var(--accent-red)' }}
+          className="inline-flex items-center gap-4 mb-8"
         >
-          ⚽ Torneo de pronósticos 2026
+          <div className="h-px w-12 md:w-20 bg-gray-600" />
+          <span className="text-xs uppercase tracking-widest text-gray-400 whitespace-nowrap">
+            Torneo de Pronósticos 2026
+          </span>
+          <div className="h-px w-12 md:w-20 bg-gray-600" />
         </motion.div>
 
         {/* Main title */}
@@ -247,7 +250,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.85 }}
-          className="flex flex-col sm:flex-row gap-4 items-center"
+          className="flex flex-col sm:flex-row gap-4 items-center mb-20"
         >
           <Link href="/login"
             className="group relative px-8 py-4 rounded-2xl font-bold text-white text-lg overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95"
@@ -282,7 +285,7 @@ export function HeroSection() {
           if (el) el.scrollIntoView({ behavior: 'smooth' })
         }}
       >
-        <span className="text-[10px] tracking-[0.3em] uppercase" style={{ color: 'var(--text-muted)' }}>scroll</span>
+
         <motion.div
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}

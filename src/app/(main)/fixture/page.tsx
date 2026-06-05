@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { MapPin, Clock } from 'lucide-react'
+import { getFlagUrl } from '@/lib/utils'
 
 type Match = {
   id: string; matchNumber: number; homeTeam: string; awayTeam: string
@@ -15,37 +16,35 @@ type Match = {
 }
 
 const phases = [
-  { key: 'GROUPS', label: 'Grupos' },
-  { key: 'ROUND_OF_32', label: '32avos' },
-  { key: 'ROUND_OF_16', label: 'Octavos' },
+  { key: 'GROUPS',        label: 'Grupos' },
+  { key: 'ROUND_OF_32',   label: '32avos' },
+  { key: 'ROUND_OF_16',   label: 'Octavos' },
   { key: 'QUARTERFINALS', label: 'Cuartos' },
-  { key: 'SEMIFINALS', label: 'Semis' },
-  { key: 'THIRD_PLACE', label: '3er Lugar' },
-  { key: 'FINAL', label: 'Final' },
+  { key: 'SEMIFINALS',    label: 'Semis' },
+  { key: 'THIRD_PLACE',   label: '3er Lugar' },
+  { key: 'FINAL',         label: 'Final' },
 ]
-const groups = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']
+const groups = ['A','B','C','D','E','F','G','H','I','J','K','L']
 
 function StatusBadge({ status }: { status: string }) {
   if (status === 'LIVE') return (
-    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold"
-      style={{ background: 'rgba(230,57,70,0.15)', color: 'var(--accent-red)' }}>
-      <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse-red" />
+    <span className="flex items-center gap-1 text-xs font-bold" style={{ color: 'var(--accent-red)' }}>
+      <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse-red inline-block" />
       EN VIVO
-    </div>
+    </span>
   )
   if (status === 'FINISHED') return (
-    <div className="px-2 py-0.5 rounded-full text-xs font-semibold"
-      style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)' }}>
-      FINALIZADO
-    </div>
+    <span className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>FINALIZADO</span>
   )
   return (
-    <div className="px-2 py-0.5 rounded-full text-xs font-semibold"
-      style={{ background: 'rgba(33,150,243,0.1)', color: '#64b5f6' }}>
-      PRÓXIMO
-    </div>
+    <span className="text-xs font-semibold" style={{ color: '#e63946' }}>PRÓXIMO</span>
   )
 }
+
+// eslint-disable-next-line @next/next/no-img-element
+const TeamFlag = ({ code, name }: { code: string; name: string }) => (
+  <img src={getFlagUrl(code)} alt={name} width={48} height={36} className="rounded object-cover mx-auto" />
+)
 
 function MatchCard({ match }: { match: Match }) {
   const pred = match.predictions?.[0]
@@ -58,6 +57,7 @@ function MatchCard({ match }: { match: Match }) {
       className="rounded-2xl p-4 transition-all hover:scale-[1.005]"
       style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}
     >
+      {/* Header row */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>#{match.matchNumber}</span>
@@ -69,17 +69,17 @@ function MatchCard({ match }: { match: Match }) {
         </div>
       </div>
 
+      {/* Teams row */}
       <div className="flex items-center gap-4">
         {/* Home */}
-        <div className="flex-1 flex flex-col items-center gap-1">
-          <span className="text-3xl leading-none">{match.homeFlag}</span>
+        <div className="flex-1 flex flex-col items-center gap-1.5">
+          <TeamFlag code={match.homeCode} name={match.homeTeam} />
           <span className="text-xs font-semibold text-center leading-tight" style={{ color: 'var(--text-primary)' }}>
             {match.homeTeam}
           </span>
-          <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{match.homeCode}</span>
         </div>
 
-        {/* Score */}
+        {/* Score / VS */}
         <div className="flex flex-col items-center gap-1 min-w-[80px]">
           {isFinished ? (
             <div className="font-bebas text-3xl leading-none" style={{ color: 'var(--text-primary)' }}>
@@ -89,7 +89,7 @@ function MatchCard({ match }: { match: Match }) {
             <div className="font-bebas text-2xl leading-none" style={{ color: 'var(--text-muted)' }}>VS</div>
           )}
           {pred && (
-            <div className={`px-2 py-0.5 rounded-lg text-xs font-semibold ${pred.isExact ? 'text-green-400' : isFinished ? 'text-blue-400' : ''}`}
+            <div className="px-2 py-0.5 rounded-lg text-xs font-semibold"
               style={{
                 background: pred.isExact ? 'rgba(76,175,80,0.12)' : isFinished ? 'rgba(33,150,243,0.1)' : 'rgba(255,255,255,0.05)',
                 color: pred.isExact ? '#4caf50' : isFinished ? '#64b5f6' : 'var(--text-muted)',
@@ -101,12 +101,11 @@ function MatchCard({ match }: { match: Match }) {
         </div>
 
         {/* Away */}
-        <div className="flex-1 flex flex-col items-center gap-1">
-          <span className="text-3xl leading-none">{match.awayFlag}</span>
+        <div className="flex-1 flex flex-col items-center gap-1.5">
+          <TeamFlag code={match.awayCode} name={match.awayTeam} />
           <span className="text-xs font-semibold text-center leading-tight" style={{ color: 'var(--text-primary)' }}>
             {match.awayTeam}
           </span>
-          <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>{match.awayCode}</span>
         </div>
       </div>
 
@@ -142,51 +141,69 @@ export default function FixturePage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Phase tabs */}
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-thin">
-        {phases.map(p => (
-          <button key={p.key} onClick={() => { setPhase(p.key); if (p.key === 'GROUPS') setGroup('A') }}
-            className="flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all"
-            style={{
-              background: phase === p.key ? 'var(--accent-red)' : 'var(--bg-elevated)',
-              color: phase === p.key ? 'white' : 'var(--text-secondary)',
-              boxShadow: phase === p.key ? '0 0 15px rgba(230,57,70,0.3)' : 'none',
-            }}>
-            {p.label}
-          </button>
-        ))}
+
+      {/* Phase tabs — editorial underline style */}
+      <div
+        className="flex gap-0 mb-1 overflow-x-auto scrollbar-thin"
+        style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}
+      >
+        {phases.map(p => {
+          const active = phase === p.key
+          return (
+            <button
+              key={p.key}
+              onClick={() => { setPhase(p.key); if (p.key === 'GROUPS') setGroup('A') }}
+              className="flex-shrink-0 px-4 pb-3 pt-1 font-bebas text-base tracking-widest transition-all relative"
+              style={{ color: active ? 'white' : 'rgba(255,255,255,0.4)' }}
+            >
+              {p.label}
+              {active && (
+                <span
+                  className="absolute bottom-0 left-0 right-0 h-0.5"
+                  style={{ background: '#e63946' }}
+                />
+              )}
+            </button>
+          )
+        })}
       </div>
 
-      {/* Group tabs */}
+      {/* Group tabs — small squares with border */}
       {phase === 'GROUPS' && (
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-thin">
-          {groups.map(g => (
-            <button key={g} onClick={() => setGroup(g)}
-              className="w-9 h-9 flex-shrink-0 rounded-xl text-sm font-bold transition-all"
-              style={{
-                background: group === g ? 'rgba(230,57,70,0.2)' : 'var(--bg-card)',
-                color: group === g ? 'var(--accent-red)' : 'var(--text-muted)',
-                border: group === g ? '1px solid rgba(230,57,70,0.4)' : '1px solid var(--border-subtle)',
-              }}>
-              {g}
-            </button>
-          ))}
+        <div className="flex gap-2 mt-4 mb-6 overflow-x-auto pb-1 scrollbar-thin">
+          {groups.map(g => {
+            const active = group === g
+            return (
+              <button
+                key={g}
+                onClick={() => setGroup(g)}
+                className="w-8 h-8 flex-shrink-0 text-sm font-bold transition-all"
+                style={{
+                  border: active ? '1px solid #e63946' : '1px solid rgba(255,255,255,0.2)',
+                  color: active ? '#e63946' : 'rgba(255,255,255,0.5)',
+                  background: 'transparent',
+                }}
+                onMouseEnter={e => { if (!active) (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.5)' }}
+                onMouseLeave={e => { if (!active) (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.2)' }}
+              >
+                {g}
+              </button>
+            )
+          })}
         </div>
       )}
 
       {/* Matches */}
       {loading ? (
-        <div className="space-y-3">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="h-32 rounded-2xl skeleton" />
-          ))}
+        <div className="space-y-3 mt-4">
+          {[1, 2, 3].map(i => <div key={i} className="h-32 rounded-2xl skeleton" />)}
         </div>
       ) : Object.keys(byDate).length === 0 ? (
         <div className="py-16 text-center">
           <p style={{ color: 'var(--text-muted)' }}>No hay partidos para esta fase/grupo</p>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-6 mt-4">
           {Object.entries(byDate).sort(([a], [b]) => a.localeCompare(b)).map(([date, dayMatches]) => (
             <div key={date}>
               <div className="flex items-center gap-3 mb-3">

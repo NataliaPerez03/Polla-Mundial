@@ -85,10 +85,7 @@ export function WhatIsSection() {
             whileInView="visible"
             viewport={{ once: true, margin: '-80px' }}
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold tracking-[0.2em] uppercase mb-6"
-              style={{ background: 'rgba(230,57,70,0.1)', border: '1px solid rgba(230,57,70,0.25)', color: 'var(--accent-red)' }}>
-              ⚽ Sobre la Polla
-            </div>
+            <div className="w-12 h-0.5 bg-red-600 mb-6" />
             <h2
               className="font-bebas leading-none mb-8"
               style={{
@@ -137,17 +134,16 @@ export function WhatIsSection() {
               <StatCounter target={30} suffix="+" label="Participantes" />
             </div>
 
-            {/* Mini feature cards */}
-            <div className="grid grid-cols-1 gap-3 mt-4">
+            {/* Editorial data strip */}
+            <div className="flex items-center gap-0 mt-4 pt-4" style={{ borderTop: '1px solid var(--border-subtle)' }}>
               {[
-                { icon: '🏟️', text: '3 países sede — 16 estadios' },
-                { icon: '🗓️', text: '11 junio – 19 julio 2026' },
-                { icon: '🏆', text: 'El mejor pronóstico se lleva el pozo' },
-              ].map(({ icon, text }) => (
-                <div key={text} className="flex items-center gap-3 px-4 py-3 rounded-xl"
-                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)' }}>
-                  <span className="text-xl">{icon}</span>
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{text}</span>
+                '11 Jun — 19 Jul 2026',
+                '16 Estadios',
+                '3 Países Sede',
+              ].map((item, i) => (
+                <div key={item} className="flex items-center">
+                  {i > 0 && <div className="w-px h-3 mx-4" style={{ background: 'var(--text-muted)' }} />}
+                  <span className="text-xs uppercase tracking-widest text-gray-400">{item}</span>
                 </div>
               ))}
             </div>

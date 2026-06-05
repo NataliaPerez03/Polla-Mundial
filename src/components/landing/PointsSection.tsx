@@ -2,14 +2,15 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { Crosshair, CheckCircle, Equal, Zap, Trophy, Star, Sliders } from 'lucide-react'
 
 const pointCards = [
-  { icon: '🎯', title: 'Resultado exacto', example: 'Ej: 2-1 y aciertas 2-1', pts: 3, color: '#4caf50', bg: 'rgba(76,175,80,0.1)', border: 'rgba(76,175,80,0.25)' },
-  { icon: '✅', title: 'Ganador correcto', example: 'Ej: gana local y lo aciertas', pts: 1, color: '#64b5f6', bg: 'rgba(33,150,243,0.1)', border: 'rgba(33,150,243,0.25)' },
-  { icon: '🤝', title: 'Empate acertado', example: 'Ej: 0-0 y pronosticas empate', pts: 1, color: '#64b5f6', bg: 'rgba(33,150,243,0.1)', border: 'rgba(33,150,243,0.25)' },
-  { icon: '⚡', title: 'Bonus eliminatoria', example: 'Exacto en octavos o más', pts: '+1', color: '#ff9800', bg: 'rgba(255,152,0,0.1)', border: 'rgba(255,152,0,0.25)' },
-  { icon: '🏆', title: 'Campeón del mundo', example: 'Pronóstico especial pre-torneo', pts: 15, color: '#ffd60a', bg: 'rgba(255,214,10,0.1)', border: 'rgba(255,214,10,0.35)', special: true },
-  { icon: '⭐', title: 'Cada semifinalista', example: 'Pronóstico especial pre-torneo', pts: 5, color: '#e040fb', bg: 'rgba(224,64,251,0.08)', border: 'rgba(224,64,251,0.2)' },
+  { Icon: Crosshair, title: 'Resultado exacto',   example: 'Ej: 2-1 y aciertas 2-1',        pts: 3,   gold: false },
+  { Icon: CheckCircle, title: 'Ganador correcto', example: 'Ej: gana local y lo aciertas',   pts: 1,   gold: false },
+  { Icon: Equal,       title: 'Empate acertado',  example: 'Ej: 0-0 y pronosticas empate',   pts: 1,   gold: false },
+  { Icon: Zap,         title: 'Bonus eliminatoria', example: 'Exacto en octavos o más',      pts: '+1', gold: false },
+  { Icon: Trophy,      title: 'Campeón del mundo', example: 'Pronóstico especial pre-torneo', pts: 15,  gold: true },
+  { Icon: Star,        title: 'Cada semifinalista', example: 'Pronóstico especial pre-torneo', pts: 5, gold: false },
 ]
 
 function PointCard({ card, i }: { card: typeof pointCards[0]; i: number }) {
@@ -20,62 +21,62 @@ function PointCard({ card, i }: { card: typeof pointCards[0]; i: number }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-30px' }}
       transition={{ delay: i * 0.08 }}
-      whileHover={{ scale: 1.04, y: -4 }}
+      whileHover={{ y: -4 }}
       onHoverStart={() => setHovered(true)}
       onHoverEnd={() => setHovered(false)}
-      className="relative rounded-2xl p-5 overflow-hidden cursor-default"
+      className="relative rounded-xl p-5 overflow-hidden cursor-default backdrop-blur-sm"
       style={{
-        background: card.special ? 'linear-gradient(135deg, rgba(255,214,10,0.12), rgba(255,214,10,0.04))' : card.bg,
-        border: `1px solid ${card.border}`,
-        boxShadow: card.special ? '0 0 30px rgba(255,214,10,0.1)' : undefined,
+        background: 'rgba(255,255,255,0.05)',
+        borderTop: '2px solid #e63946',
+        borderLeft: '1px solid rgba(255,255,255,0.06)',
+        borderRight: '1px solid rgba(255,255,255,0.06)',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        transition: 'transform 0.2s ease',
       }}
     >
-      {card.special && (
-        <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[10px] font-bold"
-          style={{ background: 'rgba(255,214,10,0.2)', color: 'var(--accent-gold)' }}>
-          ★ ESPECIAL
-        </div>
-      )}
-
-      <div className="flex items-start justify-between mb-3">
-        <span className="text-3xl">{card.icon}</span>
+      <div className="flex items-start justify-between mb-4">
+        <card.Icon size={20} color="#e63946" />
         <span
           className="font-bebas text-4xl leading-none"
-          style={{ color: card.color }}
+          style={{ color: card.gold ? '#ffd60a' : 'white' }}
         >
           {card.pts}
         </span>
       </div>
 
-      <h3 className="font-oswald font-bold text-base mb-1" style={{ color: 'var(--text-primary)' }}>
+      <h3 className="font-oswald font-bold text-base mb-1 uppercase" style={{ color: 'var(--text-primary)' }}>
         {card.title}
       </h3>
 
-      <motion.p
-        initial={{ opacity: 0, height: 0 }}
-        animate={{ opacity: hovered ? 1 : 0.6, height: 'auto' }}
-        className="text-xs leading-relaxed"
-        style={{ color: 'var(--text-muted)' }}
-      >
+      <p className="text-xs leading-relaxed transition-opacity duration-200"
+        style={{ color: 'var(--text-muted)', opacity: hovered ? 1 : 0.65 }}>
         {card.example}
-      </motion.p>
-
-      <div className="mt-3 flex items-center gap-1">
-        <span className="text-xs font-semibold" style={{ color: card.color }}>
-          {card.pts} {typeof card.pts === 'number' ? 'puntos' : 'punto extra'}
-        </span>
-        {hovered && (
-          <motion.span initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }}
-            className="text-xs" style={{ color: 'var(--text-muted)' }}>
-            {' '}→ por acierto
-          </motion.span>
-        )}
-      </div>
+      </p>
     </motion.div>
   )
 }
 
 // Interactive simulator
+function ScoreControl({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        onClick={() => onChange(Math.max(0, value - 1))}
+        className="w-10 h-10 rounded-full font-bold text-lg transition-all hover:bg-red-600"
+        style={{ border: '1px solid #e63946', color: '#e63946', background: 'transparent' }}
+      >−</button>
+      <span className="font-bebas w-12 text-center text-white" style={{ fontSize: '3rem', lineHeight: 1 }}>
+        {value}
+      </span>
+      <button
+        onClick={() => onChange(value + 1)}
+        className="w-10 h-10 rounded-full font-bold text-lg transition-all hover:bg-red-600"
+        style={{ border: '1px solid #e63946', color: '#e63946', background: 'transparent' }}
+      >+</button>
+    </div>
+  )
+}
+
 function Simulator() {
   const [home, setHome] = useState(2)
   const [away, setAway] = useState(1)
@@ -92,11 +93,11 @@ function Simulator() {
   const pts = isExact ? (3 + (isKnockout ? 1 : 0)) : isCorrect ? 1 : 0
 
   const resultLabel = isExact
-    ? `¡Resultado exacto! ${isKnockout ? '+1 bonus eliminatoria' : ''}`
-    : isCorrect ? 'Acertaste el ganador/empate'
-    : 'No acertaste 😔'
+    ? `¡Resultado exacto!${isKnockout ? ' +1 bonus eliminatoria' : ''}`
+    : isCorrect ? 'Acertaste el ganador / empate'
+    : 'No acertaste'
 
-  const resultColor = isExact ? '#4caf50' : isCorrect ? '#64b5f6' : 'var(--text-muted)'
+  const resultColor = pts >= 3 ? '#e63946' : pts === 1 ? '#ffd60a' : '#6c757d'
 
   return (
     <motion.div
@@ -104,19 +105,23 @@ function Simulator() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: 0.3 }}
-      className="mt-12 rounded-3xl p-6 md:p-8"
-      style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}
+      className="mt-12 rounded-lg p-6 md:p-8"
+      style={{
+        background: 'linear-gradient(135deg, #1a1a2e, #16213e)',
+        borderTop: '3px solid #e63946',
+        borderLeft: '1px solid rgba(230,57,70,0.3)',
+        borderRight: '1px solid rgba(230,57,70,0.3)',
+        borderBottom: '1px solid rgba(230,57,70,0.3)',
+      }}
     >
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
-          style={{ background: 'rgba(230,57,70,0.15)', border: '1px solid rgba(230,57,70,0.3)' }}>
-          🧮
-        </div>
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-8">
+        <Sliders size={20} color="#e63946" />
         <div>
-          <h3 className="font-oswald font-bold text-xl" style={{ color: 'var(--text-primary)' }}>
-            Simulador de puntos
+          <h3 className="font-bebas text-2xl uppercase tracking-widest" style={{ color: 'var(--text-primary)' }}>
+            Simulador de Puntos
           </h3>
-          <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-xs tracking-wide" style={{ color: 'var(--text-muted)' }}>
             Ingresa un marcador y ve cuántos puntos ganarías
           </p>
         </div>
@@ -124,120 +129,98 @@ function Simulator() {
 
       <div className="grid md:grid-cols-2 gap-8">
         {/* Inputs */}
-        <div className="space-y-5">
+        <div className="space-y-7">
           {/* Real result */}
           <div>
-            <label className="text-xs font-semibold uppercase tracking-widest mb-2 block" style={{ color: 'var(--text-muted)' }}>
-              Resultado real del partido
-            </label>
-            <div className="flex items-center gap-3">
-              <div className="flex-1 flex items-center gap-2">
-                <span className="text-2xl">🏠</span>
-                <div className="flex items-center gap-1">
-                  <button onClick={() => setHome(Math.max(0, home - 1))}
-                    className="w-8 h-8 rounded-lg font-bold transition-all hover:bg-white/10"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)' }}>−</button>
-                  <span className="font-bebas text-3xl w-10 text-center" style={{ color: 'var(--text-primary)' }}>{home}</span>
-                  <button onClick={() => setHome(home + 1)}
-                    className="w-8 h-8 rounded-lg font-bold transition-all hover:bg-white/10"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)' }}>+</button>
+            <p className="text-xs uppercase tracking-widest mb-4" style={{ color: '#6c757d' }}>
+              Resultado Real
+            </p>
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <p className="text-[10px] uppercase tracking-widest mb-2 text-center" style={{ color: '#6c757d' }}>Local</p>
+                <div className="flex justify-center">
+                  <ScoreControl value={home} onChange={setHome} />
                 </div>
               </div>
-              <span className="font-bebas text-2xl" style={{ color: 'var(--text-muted)' }}>–</span>
-              <div className="flex-1 flex items-center gap-2 justify-end">
-                <div className="flex items-center gap-1">
-                  <button onClick={() => setAway(Math.max(0, away - 1))}
-                    className="w-8 h-8 rounded-lg font-bold transition-all hover:bg-white/10"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)' }}>−</button>
-                  <span className="font-bebas text-3xl w-10 text-center" style={{ color: 'var(--text-primary)' }}>{away}</span>
-                  <button onClick={() => setAway(away + 1)}
-                    className="w-8 h-8 rounded-lg font-bold transition-all hover:bg-white/10"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)' }}>+</button>
+              <span className="font-bebas text-3xl pb-2" style={{ color: 'rgba(255,255,255,0.2)' }}>—</span>
+              <div className="flex-1">
+                <p className="text-[10px] uppercase tracking-widest mb-2 text-center" style={{ color: '#6c757d' }}>Visitante</p>
+                <div className="flex justify-center">
+                  <ScoreControl value={away} onChange={setAway} />
                 </div>
-                <span className="text-2xl">✈️</span>
               </div>
             </div>
           </div>
 
           {/* My prediction */}
           <div>
-            <label className="text-xs font-semibold uppercase tracking-widest mb-2 block" style={{ color: 'var(--text-muted)' }}>
-              Mi pronóstico
-            </label>
-            <div className="flex items-center gap-3">
-              <div className="flex-1 flex items-center gap-2">
-                <span className="text-2xl">🏠</span>
-                <div className="flex items-center gap-1">
-                  <button onClick={() => setPredHome(Math.max(0, predHome - 1))}
-                    className="w-8 h-8 rounded-lg font-bold transition-all hover:bg-white/10"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)' }}>−</button>
-                  <span className="font-bebas text-3xl w-10 text-center" style={{ color: 'var(--accent-red)' }}>{predHome}</span>
-                  <button onClick={() => setPredHome(predHome + 1)}
-                    className="w-8 h-8 rounded-lg font-bold transition-all hover:bg-white/10"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)' }}>+</button>
+            <p className="text-xs uppercase tracking-widest mb-4" style={{ color: '#6c757d' }}>
+              Mi Pronóstico
+            </p>
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <p className="text-[10px] uppercase tracking-widest mb-2 text-center" style={{ color: '#6c757d' }}>Local</p>
+                <div className="flex justify-center">
+                  <ScoreControl value={predHome} onChange={setPredHome} />
                 </div>
               </div>
-              <span className="font-bebas text-2xl" style={{ color: 'var(--text-muted)' }}>–</span>
-              <div className="flex-1 flex items-center gap-2 justify-end">
-                <div className="flex items-center gap-1">
-                  <button onClick={() => setPredAway(Math.max(0, predAway - 1))}
-                    className="w-8 h-8 rounded-lg font-bold transition-all hover:bg-white/10"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)' }}>−</button>
-                  <span className="font-bebas text-3xl w-10 text-center" style={{ color: 'var(--accent-red)' }}>{predAway}</span>
-                  <button onClick={() => setPredAway(predAway + 1)}
-                    className="w-8 h-8 rounded-lg font-bold transition-all hover:bg-white/10"
-                    style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)' }}>+</button>
+              <span className="font-bebas text-3xl pb-2" style={{ color: 'rgba(255,255,255,0.2)' }}>—</span>
+              <div className="flex-1">
+                <p className="text-[10px] uppercase tracking-widest mb-2 text-center" style={{ color: '#6c757d' }}>Visitante</p>
+                <div className="flex justify-center">
+                  <ScoreControl value={predAway} onChange={setPredAway} />
                 </div>
-                <span className="text-2xl">✈️</span>
               </div>
             </div>
           </div>
 
           {/* Knockout toggle */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 pt-1">
             <button
               onClick={() => setIsKnockout(!isKnockout)}
-              className="relative w-10 h-5 rounded-full transition-all duration-300"
-              style={{ background: isKnockout ? 'var(--accent-red)' : 'rgba(255,255,255,0.1)' }}
+              className="relative w-11 h-6 rounded-full transition-all duration-300 flex-shrink-0"
+              style={{ background: isKnockout ? '#e63946' : 'rgba(255,255,255,0.1)' }}
             >
               <motion.div
-                animate={{ x: isKnockout ? 20 : 2 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-                className="absolute top-0.5 w-4 h-4 rounded-full bg-white"
+                animate={{ x: isKnockout ? 22 : 2 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className="absolute top-1 w-4 h-4 rounded-full bg-white"
               />
             </button>
-            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-              Fase eliminatoria <span style={{ color: 'var(--text-muted)' }}>(+1 bonus si exacto)</span>
+            <span className="text-xs uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
+              Fase eliminatoria{' '}
+              <span style={{ color: '#6c757d' }}>(+1 si exacto)</span>
             </span>
           </div>
         </div>
 
-        {/* Result */}
-        <div className="flex flex-col items-center justify-center p-6 rounded-2xl"
-          style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)' }}>
-          <p className="text-sm mb-4" style={{ color: 'var(--text-muted)' }}>Resultado:</p>
+        {/* Result panel */}
+        <div
+          className="flex flex-col items-center justify-center p-8 rounded-lg"
+          style={{
+            background: '#0a0a0f',
+            borderLeft: '3px solid #e63946',
+          }}
+        >
           <motion.div
             key={pts}
-            initial={{ scale: 0.5, opacity: 0 }}
+            initial={{ scale: 0.6, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: 'spring', stiffness: 200 }}
+            className="font-bebas leading-none"
+            style={{ fontSize: '6rem', color: resultColor }}
           >
-            <span
-              className="font-bebas leading-none"
-              style={{ fontSize: '8rem', color: resultColor }}
-            >
-              {pts}
-            </span>
+            {pts}
           </motion.div>
-          <p className="font-oswald font-bold text-lg" style={{ color: resultColor }}>
+          <p className="text-xs uppercase tracking-[0.3em] mt-1 mb-4" style={{ color: '#6c757d' }}>
             {pts === 1 ? 'punto' : 'puntos'}
           </p>
           <motion.p
             key={resultLabel}
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-3 text-sm text-center"
-            style={{ color: 'var(--text-secondary)' }}
+            className="text-sm text-center font-semibold"
+            style={{ color: 'white' }}
           >
             {resultLabel}
           </motion.p>

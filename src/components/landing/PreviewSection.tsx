@@ -2,25 +2,42 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Trophy } from 'lucide-react'
+
+const podiumColors: Record<number, string> = { 1: '#ffd60a', 2: '#adb5bd', 3: '#cd7c3a' }
+
+function Flag({ code, alt }: { code: string; alt: string }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`https://flagcdn.com/24x18/${code}.png`}
+      alt={alt}
+      width={24}
+      height={18}
+      className="rounded-sm object-cover"
+      style={{ display: 'inline-block', flexShrink: 0 }}
+    />
+  )
+}
 
 const standings = [
-  { pos: 1, name: 'Carlos R.', pts: 87, exact: 12, correct: 23, paid: true },
-  { pos: 2, name: 'Valentina G.', pts: 74, exact: 9, correct: 20, paid: true },
-  { pos: 3, name: 'Sebastián T.', pts: 68, exact: 8, correct: 18, paid: true },
-  { pos: 4, name: 'Camila M.', pts: 61, exact: 7, correct: 16, paid: true },
-  { pos: 5, name: 'Andrés P.', pts: 55, exact: 6, correct: 14, paid: false },
+  { pos: 1, name: 'Carlos R.',    pts: 87, exact: 12, paid: true },
+  { pos: 2, name: 'Valentina G.', pts: 74, exact: 9,  paid: true },
+  { pos: 3, name: 'Sebastián T.', pts: 68, exact: 8,  paid: true },
+  { pos: 4, name: 'Camila M.',    pts: 61, exact: 7,  paid: true },
+  { pos: 5, name: 'Andrés P.',    pts: 55, exact: 6,  paid: false },
 ]
 
 const matches = [
-  { home: '🇦🇷', homeTeam: 'Argentina', away: '🇫🇷', awayTeam: 'Francia', realScore: '3-3', myPred: '2-1', pts: 0, status: 'Finalizado' },
-  { home: '🇧🇷', homeTeam: 'Brasil', away: '🇩🇪', awayTeam: 'Alemania', realScore: '2-0', myPred: '2-0', pts: 3, status: 'Finalizado', exact: true },
-  { home: '🇪🇸', homeTeam: 'España', away: '🇵🇹', awayTeam: 'Portugal', realScore: '—', myPred: '1-1', pts: null, status: 'Próximo' },
+  { homeCode: 'ar', homeTeam: 'Argentina', awayCode: 'fr', awayTeam: 'Francia',  realScore: '3-3', pts: 0,    status: 'Finalizado', exact: false },
+  { homeCode: 'br', homeTeam: 'Brasil',    awayCode: 'de', awayTeam: 'Alemania', realScore: '2-0', pts: 3,    status: 'Finalizado', exact: true  },
+  { homeCode: 'es', homeTeam: 'España',    awayCode: 'pt', awayTeam: 'Portugal', realScore: '—',   pts: null, status: 'Próximo',    exact: false },
 ]
 
 const predictions = [
-  { home: '🇺🇸', homeTeam: 'EE.UU.', away: '🇲🇽', awayTeam: 'México', date: '15 Jun · 20:00', predHome: 2, predAway: 1, locked: false },
-  { home: '🇨🇦', homeTeam: 'Canadá', away: '🇨🇴', awayTeam: 'Colombia', date: '16 Jun · 18:00', predHome: '', predAway: '', locked: false },
-  { home: '🇯🇵', homeTeam: 'Japón', away: '🇰🇷', awayTeam: 'Corea del Sur', date: '16 Jun · 14:00', predHome: 1, predAway: 2, locked: true },
+  { homeCode: 'us', homeTeam: 'EE.UU.',        awayCode: 'mx', awayTeam: 'México',        date: '15 Jun · 20:00', predHome: 2,  predAway: 1,  locked: false },
+  { homeCode: 'ca', homeTeam: 'Canadá',        awayCode: 'co', awayTeam: 'Colombia',       date: '16 Jun · 18:00', predHome: '', predAway: '', locked: false },
+  { homeCode: 'jp', homeTeam: 'Japón',         awayCode: 'kr', awayTeam: 'Corea del Sur',  date: '16 Jun · 14:00', predHome: 1,  predAway: 2,  locked: true  },
 ]
 
 const tabs = ['Tabla', 'Fixture', 'Mis Pronósticos']
@@ -30,16 +47,27 @@ function StandingsPreview() {
     <div className="space-y-2">
       {standings.map((p) => (
         <div key={p.pos} className="flex items-center gap-3 px-4 py-2.5 rounded-xl"
-          style={{ background: p.pos === 1 ? 'rgba(255,214,10,0.06)' : 'rgba(255,255,255,0.03)', border: `1px solid ${p.pos === 1 ? 'rgba(255,214,10,0.2)' : 'var(--border-subtle)'}` }}>
-          <div className="w-7 text-center">
-            {p.pos === 1 ? '🥇' : p.pos === 2 ? '🥈' : p.pos === 3 ? '🥉' : (
+          style={{
+            background: p.pos === 1 ? 'rgba(255,214,10,0.06)' : 'rgba(255,255,255,0.03)',
+            border: `1px solid ${p.pos === 1 ? 'rgba(255,214,10,0.2)' : 'var(--border-subtle)'}`,
+          }}>
+          <div className="w-7 flex justify-center">
+            {p.pos <= 3 ? (
+              <span className="font-bebas text-lg leading-none" style={{ color: podiumColors[p.pos] }}>
+                {p.pos}
+              </span>
+            ) : (
               <span className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>#{p.pos}</span>
             )}
           </div>
           <div className="flex-1 text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{p.name}</div>
           <div className="font-bebas text-xl" style={{ color: p.pos === 1 ? 'var(--accent-gold)' : 'var(--text-primary)' }}>{p.pts}</div>
           <div className="text-xs hidden sm:block" style={{ color: 'var(--text-muted)' }}>{p.exact} exactos</div>
-          {!p.paid && <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,152,0,0.1)', color: '#ff9800' }}>⏳</span>}
+          {!p.paid && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,152,0,0.1)', color: '#ff9800' }}>
+              Pendiente
+            </span>
+          )}
         </div>
       ))}
     </div>
@@ -53,22 +81,27 @@ function FixturePreview() {
         <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl"
           style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)' }}>
           <div className="flex items-center gap-2 flex-1">
-            <span className="text-xl">{m.home}</span>
+            <Flag code={m.homeCode} alt={m.homeTeam} />
             <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{m.homeTeam}</span>
           </div>
           <div className="text-center">
             <div className="font-bebas text-lg" style={{ color: m.status === 'Finalizado' ? 'var(--text-primary)' : 'var(--text-muted)' }}>
               {m.realScore}
             </div>
-            <div className="text-[10px]" style={{ color: m.status === 'Próximo' ? '#64b5f6' : 'var(--text-muted)' }}>{m.status}</div>
+            <div className="text-[10px]" style={{ color: m.status === 'Próximo' ? '#64b5f6' : 'var(--text-muted)' }}>
+              {m.status}
+            </div>
           </div>
           <div className="flex items-center gap-2 flex-1 justify-end">
             <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{m.awayTeam}</span>
-            <span className="text-xl">{m.away}</span>
+            <Flag code={m.awayCode} alt={m.awayTeam} />
           </div>
           {m.pts !== null && (
             <span className="text-xs px-2 py-0.5 rounded font-bold ml-2"
-              style={{ background: m.exact ? 'rgba(76,175,80,0.15)' : m.pts > 0 ? 'rgba(33,150,243,0.1)' : 'rgba(255,255,255,0.05)', color: m.exact ? '#4caf50' : m.pts > 0 ? '#64b5f6' : 'var(--text-muted)' }}>
+              style={{
+                background: m.exact ? 'rgba(76,175,80,0.15)' : m.pts > 0 ? 'rgba(33,150,243,0.1)' : 'rgba(255,255,255,0.05)',
+                color: m.exact ? '#4caf50' : m.pts > 0 ? '#64b5f6' : 'var(--text-muted)',
+              }}>
               {m.pts > 0 ? `+${m.pts}` : '0'}
             </span>
           )}
@@ -86,11 +119,15 @@ function PredictionsPreview() {
           style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-subtle)', opacity: m.locked ? 0.6 : 1 }}>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{m.date}</span>
-            {m.locked && <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(230,57,70,0.1)', color: 'var(--accent-red)' }}>🔒 Cerrado</span>}
+            {m.locked && (
+              <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'rgba(230,57,70,0.1)', color: 'var(--accent-red)' }}>
+                Cerrado
+              </span>
+            )}
           </div>
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">{m.home}</span>
+              <Flag code={m.homeCode} alt={m.homeTeam} />
               <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{m.homeTeam}</span>
             </div>
             <div className="flex items-center gap-2">
@@ -106,7 +143,7 @@ function PredictionsPreview() {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{m.awayTeam}</span>
-              <span className="text-2xl">{m.away}</span>
+              <Flag code={m.awayCode} alt={m.awayTeam} />
             </div>
           </div>
         </div>
@@ -117,7 +154,6 @@ function PredictionsPreview() {
 
 export function PreviewSection() {
   const [activeTab, setActiveTab] = useState(0)
-
   const tabContent = [<StandingsPreview key="s" />, <FixturePreview key="f" />, <PredictionsPreview key="p" />]
 
   return (
@@ -125,7 +161,6 @@ export function PreviewSection() {
       <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'var(--border-subtle)' }} />
 
       <div className="max-w-7xl mx-auto px-5 md:px-10">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -135,16 +170,8 @@ export function PreviewSection() {
           <p className="font-oswald text-xs tracking-[0.3em] uppercase mb-4" style={{ color: 'var(--accent-red)' }}>
             — Vista previa —
           </p>
-          <h2
-            className="font-bebas leading-none"
-            style={{
-              fontSize: 'clamp(2.5rem, 6vw, 6rem)',
-              background: 'linear-gradient(135deg, #ffffff, #888888)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
+          <h2 className="font-bebas leading-none"
+            style={{ fontSize: 'clamp(2.5rem, 6vw, 6rem)', background: 'linear-gradient(135deg, #ffffff, #888888)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             ASÍ SE VE POR DENTRO
           </h2>
           <p className="mt-4" style={{ color: 'var(--text-secondary)' }}>
@@ -163,13 +190,11 @@ export function PreviewSection() {
           {/* Browser chrome */}
           <div className="rounded-t-2xl px-4 py-3 flex items-center gap-3"
             style={{ background: 'var(--bg-elevated)', borderBottom: '1px solid var(--border-subtle)' }}>
-            {/* Dots */}
             <div className="flex gap-1.5">
               <div className="w-3 h-3 rounded-full" style={{ background: '#ff5f57' }} />
               <div className="w-3 h-3 rounded-full" style={{ background: '#febc2e' }} />
               <div className="w-3 h-3 rounded-full" style={{ background: '#28c840' }} />
             </div>
-            {/* URL bar */}
             <div className="flex-1 px-3 py-1 rounded-lg text-xs text-center"
               style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)' }}>
               localhost:3000/tabla-posiciones
@@ -183,8 +208,7 @@ export function PreviewSection() {
             <div className="flex items-center justify-between px-5 py-3"
               style={{ background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-subtle)' }}>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-lg flex items-center justify-center text-xs"
-                  style={{ background: 'rgba(230,57,70,0.2)' }}>🏆</div>
+                <Trophy size={16} color="var(--accent-red)" />
                 <span className="font-bebas text-sm tracking-widest text-white">POLLA MUNDIAL</span>
               </div>
               <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold"
@@ -196,10 +220,7 @@ export function PreviewSection() {
               {tabs.map((tab, i) => (
                 <button key={tab} onClick={() => setActiveTab(i)}
                   className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
-                  style={{
-                    background: activeTab === i ? 'var(--accent-red)' : 'var(--bg-elevated)',
-                    color: activeTab === i ? 'white' : 'var(--text-muted)',
-                  }}>
+                  style={{ background: activeTab === i ? 'var(--accent-red)' : 'var(--bg-elevated)', color: activeTab === i ? 'white' : 'var(--text-muted)' }}>
                   {tab}
                 </button>
               ))}
@@ -208,13 +229,7 @@ export function PreviewSection() {
             {/* Tab content */}
             <div className="px-4 pb-5 min-h-[280px]">
               <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeTab}
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  transition={{ duration: 0.2 }}
-                >
+                <motion.div key={activeTab} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.2 }}>
                   {tabContent[activeTab]}
                 </motion.div>
               </AnimatePresence>
