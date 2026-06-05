@@ -1,10 +1,8 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaLibSql } from '@prisma/adapter-libsql'
 import bcrypt from 'bcryptjs'
 import path from 'path'
 
-const adapter = new PrismaLibSql({ url: `file:${path.join(process.cwd(), 'prisma', 'dev.db')}` })
-const prisma = new PrismaClient({ adapter })
+const prisma = new PrismaClient()
 
 const teams = [
   // CONMEBOL
